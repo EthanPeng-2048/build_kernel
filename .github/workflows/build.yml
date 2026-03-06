@@ -22,7 +22,7 @@ jobs:
 
     - name: Clone build system
       run: |
-        git clone --depth=1 -b android13-5.10 https://android.googlesource.com/kernel/build
+        git clone --depth=1 -b main-kernel-build-2023 https://android.googlesource.com/kernel/build
 
     - name: Clone clang
       run: |
