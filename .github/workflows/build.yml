@@ -1,0 +1,45 @@
+name: Build GKI 5.10
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout empty repo
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y bc bison flex libssl-dev libelf-dev ccache python3
+
+    - name: Clone GKI kernel
+      run: |
+        git clone --depth=1 -b android13-5.10 https://android.googlesource.com/kernel/common gki
+
+    - name: Clone build system
+      run: |
+        git clone --depth=1 -b android13-5.10 https://android.googlesource.com/kernel/build
+
+    - name: Clone clang
+      run: |
+        mkdir -p prebuilts
+        git clone --depth=1 -b android13-release https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 prebuilts/clang
+
+    - name: Clone build-tools
+      run: |
+        git clone --depth=1 -b android13-release https://android.googlesource.com/platform/prebuilts/build-tools prebuilts/build-tools
+
+    - name: Build GKI kernel
+      run: |
+        cd gki
+        BUILD_CONFIG=build.config.gki.aarch64 ../build/build.sh
+
+    - name: Upload Image
+      uses: actions/upload-artifact@v3
+      with:
+        name: gki-image
+        path: gki/out/android13-5.10/dist/Image
